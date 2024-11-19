@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { FXQLParserService } from './fxql-parser/fxql-parser.service';
+import { FXQLParserService } from '../fxql-parser/fxql-parser.service';
 
 @Module({
   imports: [],
