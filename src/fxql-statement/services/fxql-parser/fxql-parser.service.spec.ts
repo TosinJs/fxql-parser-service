@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { FxqlParserService } from './fxql-parser.service';
+import { BadFxqlRequestErrorWithMessage } from '../../../utils/errorBuilder.utils';
 
 describe('FXQLParserService', () => {
   let parser: FxqlParserService;
@@ -140,7 +141,7 @@ describe('FXQLParserService', () => {
     errorTestCases.forEach((testCase) => {
       it(`should throw error for ${testCase.name}`, () => {
         expect(() => parser.parseFxqlStatement(testCase.input)).toThrow(
-          testCase.errorMessage,
+          new BadFxqlRequestErrorWithMessage(testCase.errorMessage),
         );
       });
     });
