@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { FxqlStatementController } from './fxql-statement.controller';
-import { FxqlStatementService } from '../services/fxql-statement.service';
+import { FxqlStatementService } from '../services/fxql/fxql-statement.service';
 
 describe('FxqlStatementController', () => {
   let controller: FxqlStatementController;

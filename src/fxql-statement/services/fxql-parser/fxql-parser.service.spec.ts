@@ -1,24 +1,25 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { FXQLParserService } from './fxql-parser.service';
+import { FxqlParserService } from './fxql-parser.service';
 
 describe('FXQLParserService', () => {
-  let parser: FXQLParserService;
+  let parser: FxqlParserService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [FXQLParserService],
+      providers: [FxqlParserService],
     }).compile();
 
-    parser = module.get<FXQLParserService>(FXQLParserService);
+    parser = module.get<FxqlParserService>(FxqlParserService);
   });
 
-  describe('parseFXQLStatement', () => {
+  describe('parseFxqlStatement', () => {
     it('should parse a single valid currency pair', () => {
-      const input = 'USD-GBP {\n BUY 0.85\n SELL 0.90\n CAP 10000\n}';
-      const result = parser.parseFXQLStatement(input);
+      const input = 'USD-GBP {\\n BUY 0.85\\n SELL 0.90\\n CAP 10000\\n}';
+      const result = parser.parseFxqlStatement(input);
 
       expect(result).toHaveLength(1);
       expect(result[0]).toEqual({
+        id: expect.any(String),
         sourceCurrency: 'USD',
         destinationCurrency: 'GBP',
         buyPrice: 0.85,
@@ -29,11 +30,12 @@ describe('FXQLParserService', () => {
 
     it('should parse multiple valid currency pairs', () => {
       const input =
-        'USD-GBP {\n BUY 0.85\n SELL 0.90\n CAP 10000\n}\n\nEUR-JPY {\n BUY 145.20\n SELL 146.50\n CAP 50000\n}';
-      const result = parser.parseFXQLStatement(input);
+        'USD-GBP {\\n BUY 0.85\\n SELL 0.90\\n CAP 10000\\n}\\n\\nEUR-JPY {\\n BUY 145.20\\n SELL 146.50\\n CAP 50000\\n}';
+      const result = parser.parseFxqlStatement(input);
 
       expect(result).toHaveLength(2);
       expect(result[0]).toEqual({
+        id: expect.any(String),
         sourceCurrency: 'USD',
         destinationCurrency: 'GBP',
         buyPrice: 0.85,
@@ -41,6 +43,7 @@ describe('FXQLParserService', () => {
         capAmount: 10000,
       });
       expect(result[1]).toEqual({
+        id: expect.any(String),
         sourceCurrency: 'EUR',
         destinationCurrency: 'JPY',
         buyPrice: 145.2,
@@ -51,11 +54,12 @@ describe('FXQLParserService', () => {
 
     it('should keep only the latest entry for duplicate currency pairs', () => {
       const input =
-        'USD-GBP {\n BUY 0.85\n SELL 0.90\n CAP 10000\n}\n\nUSD-GBP {\n BUY 0.86\n SELL 0.91\n CAP 12000\n}';
-      const result = parser.parseFXQLStatement(input);
+        'USD-GBP {\\n BUY 0.85\\n SELL 0.90\\n CAP 10000\\n}\\n\\nUSD-GBP {\\n BUY 0.86\\n SELL 0.91\\n CAP 12000\\n}';
+      const result = parser.parseFxqlStatement(input);
 
       expect(result).toHaveLength(1);
       expect(result[0]).toEqual({
+        id: expect.any(String),
         sourceCurrency: 'USD',
         destinationCurrency: 'GBP',
         buyPrice: 0.86,
@@ -65,16 +69,16 @@ describe('FXQLParserService', () => {
     });
 
     it('should handle decimal values correctly', () => {
-      const input = 'NGN-USD {\n BUY 0.0022\n SELL 0.0023\n CAP 2000000\n}';
-      const result = parser.parseFXQLStatement(input);
+      const input = 'NGN-USD {\\n BUY 0.0022\\n SELL 0.0023\\n CAP 2000000\\n}';
+      const result = parser.parseFxqlStatement(input);
 
       expect(result[0].buyPrice).toBe(0.0022);
       expect(result[0].sellPrice).toBe(0.0023);
     });
 
     it('should handle CAP values of 0', () => {
-      const input = 'NGN-USD {\n BUY 0.0022\n SELL 0.0023\n CAP 0\n}';
-      const result = parser.parseFXQLStatement(input);
+      const input = 'NGN-USD {\\n BUY 0.0022\\n SELL 0.0023\\n CAP 0\\n}';
+      const result = parser.parseFxqlStatement(input);
 
       expect(result[0].buyPrice).toBe(0.0022);
       expect(result[0].sellPrice).toBe(0.0023);
@@ -82,12 +86,12 @@ describe('FXQLParserService', () => {
     });
   });
 
-  describe('parseFXQLStatement Error Handling', () => {
+  describe('parseFxqlStatement Error Handling', () => {
     const errorTestCases = [
       {
         name: 'Invalid currency case',
         input:
-          'USD-GBP {\n BUY 0.85\n SELL 0.90\n CAP 10000\n}\n\nusd-GBP {\n BUY 0.86\n SELL 0.91\n CAP 12000\n}',
+          'USD-GBP {\\n BUY 0.85\\n SELL 0.90\\n CAP 10000\\n}\\n\\nusd-GBP {\\n BUY 0.86\\n SELL 0.91\\n CAP 12000\\n}',
         errorMessage: `Syntax error at line 7: Invalid currency 'usd'.`,
       },
       {
@@ -98,44 +102,44 @@ describe('FXQLParserService', () => {
       },
       {
         name: 'Incomplete statement',
-        input: 'USD-GBP {\n BUY 100\n SELL 200\n',
+        input: 'USD-GBP {\\n BUY 100\\n SELL 200\\n',
         errorMessage: 'Syntax error: FXQL block was not closed.',
       },
       {
         name: 'Incomplete statement',
-        input: 'USD-GBP {\n BUY 100\n SELL 200\n',
+        input: 'USD-GBP {\\n BUY 100\\n SELL 200\\n',
         errorMessage: 'Syntax error: FXQL block was not closed.',
       },
       {
         name: 'Incomplete statement',
-        input: 'USD-GBP {\n BuY 100\n SELL 200\n',
+        input: 'USD-GBP {\\n BuY 100\\n SELL 200\\n',
         errorMessage: `Syntax error at line 2: Unknown key 'BuY'`,
       },
       {
         name: 'Invalid buy price',
-        input: 'USD-GBP {\n BUY abc\n SELL 200\n CAP 93800\n}',
+        input: 'USD-GBP {\\n BUY abc\\n SELL 200\\n CAP 93800\\n}',
         errorMessage: `Syntax error at line ${'2'}: Invalid value for BUY 'abc'. Expected a positive number.`,
       },
       {
         name: 'Invalid sell price',
-        input: 'USD-GBP {\n BUY 200\n SELL a00\n CAP 3800\n}',
+        input: 'USD-GBP {\\n BUY 200\\n SELL a00\\n CAP 3800\\n}',
         errorMessage: `Syntax error at line ${'3'}: Invalid value for SELL 'a00'. Expected a positive number.`,
       },
       {
         name: 'Negative cap amount',
-        input: 'USD-GBP {\n BUY 100\n SELL 200\n CAP -50\n}',
+        input: 'USD-GBP {\\n BUY 100\\n SELL 200\\n CAP -50\\n}',
         errorMessage: `Syntax error at line 4: Invalid value for CAP '-50'. Expected a non-negative integer.`,
       },
       {
         name: 'Decimal cap amount',
-        input: 'USD-GBP {\n BUY 100\n SELL 200\n CAP 0.02\n}',
+        input: 'USD-GBP {\\n BUY 100\\n SELL 200\\n CAP 0.02\\n}',
         errorMessage: `Syntax error at line 4: Invalid value for CAP '0.02'. Expected a non-negative integer.`,
       },
     ];
 
     errorTestCases.forEach((testCase) => {
       it(`should throw error for ${testCase.name}`, () => {
-        expect(() => parser.parseFXQLStatement(testCase.input)).toThrow(
+        expect(() => parser.parseFxqlStatement(testCase.input)).toThrow(
           testCase.errorMessage,
         );
       });

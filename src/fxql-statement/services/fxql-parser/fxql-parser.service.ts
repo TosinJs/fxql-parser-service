@@ -1,6 +1,8 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
+import { v4 as uuidv4 } from 'uuid';
 
-interface ParsedFXQL {
+export interface ParsedFxql {
+  id: string;
   sourceCurrency: string;
   destinationCurrency: string;
   buyPrice: number;
@@ -9,11 +11,11 @@ interface ParsedFXQL {
 }
 
 @Injectable()
-export class FXQLParserService {
-  parseFXQLStatement(fxql: string): ParsedFXQL[] {
-    const lines = fxql.trim().split('\n');
-    const currencyPairsMap: { [key: string]: ParsedFXQL } = {};
-    let currentEntry: Partial<ParsedFXQL> | null = null;
+export class FxqlParserService {
+  parseFxqlStatement(fxql: string): ParsedFxql[] {
+    const lines = fxql.trim().split('\\n');
+    const currencyPairsMap: { [key: string]: ParsedFxql } = {};
+    let currentEntry: Partial<ParsedFxql> | null = null;
 
     lines.forEach((line, index) => {
       const trimmedLine = line.trim();
@@ -45,8 +47,9 @@ export class FXQLParserService {
           );
         }
 
+        currentEntry.id = uuidv4();
         const key = `${currentEntry.sourceCurrency}-${currentEntry.destinationCurrency}`;
-        currencyPairsMap[key] = currentEntry as ParsedFXQL;
+        currencyPairsMap[key] = currentEntry as ParsedFxql;
         currentEntry = null;
       }
 
@@ -140,7 +143,7 @@ export class FXQLParserService {
     return num;
   }
 
-  private isCompleteEntry(entry: Partial<ParsedFXQL>): boolean {
+  private isCompleteEntry(entry: Partial<ParsedFxql>): boolean {
     return (
       entry.sourceCurrency &&
       entry.destinationCurrency &&
