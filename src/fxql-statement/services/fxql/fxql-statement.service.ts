@@ -16,15 +16,11 @@ export class FxqlStatementService {
   async create(
     createFxqlStatementDto: CreateFxqlStatementDto,
   ): Promise<ParsedFxql[]> {
-    try {
-      const parsedFxql = this.fxqlParserService.parseFxqlStatement(
-        createFxqlStatementDto.FXQL,
-      );
-      await this.dbFxqlService.insertFxqlStatement(parsedFxql);
+    const parsedFxql = this.fxqlParserService.parseFxqlStatement(
+      createFxqlStatementDto.FXQL,
+    );
+    await this.dbFxqlService.insertFxqlStatement(parsedFxql);
 
-      return parsedFxql;
-    } catch (error) {
-      console.log(error);
-    }
+    return parsedFxql;
   }
 }

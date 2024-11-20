@@ -1,4 +1,5 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
+import { BadFxqlRequestErrorWithMessage } from '../../../utils/errorBuilder.utils';
 import { v4 as uuidv4 } from 'uuid';
 
 export interface ParsedFxql {
@@ -23,7 +24,7 @@ export class FxqlParserService {
       // Handle currency pair line
       if (trimmedLine.includes('-') && trimmedLine.endsWith('{')) {
         if (currentEntry) {
-          throw new BadRequestException(
+          throw new BadFxqlRequestErrorWithMessage(
             `Syntax error at line ${index + 1}: Unexpected opening of new FXQL block before closing the previous one.`,
           );
         }
@@ -42,7 +43,7 @@ export class FxqlParserService {
       // Handle closing brace
       else if (trimmedLine === '}') {
         if (!currentEntry || !this.isCompleteEntry(currentEntry)) {
-          throw new BadRequestException(
+          throw new BadFxqlRequestErrorWithMessage(
             `Syntax error at line ${index + 1}: Incomplete FXQL block.`,
           );
         }
@@ -56,7 +57,7 @@ export class FxqlParserService {
       // Handle new currency input
       else if (trimmedLine === '') {
         if (currentEntry || Object.values(currencyPairsMap).length < 1) {
-          throw new BadRequestException(
+          throw new BadFxqlRequestErrorWithMessage(
             `Syntax error at line ${index + 1}: Incomplete FXQL block.`,
           );
         }
@@ -85,14 +86,14 @@ export class FxqlParserService {
             currentEntry.capAmount = this.validateCap(value, index + 1);
             break;
           default:
-            throw new BadRequestException(
+            throw new BadFxqlRequestErrorWithMessage(
               `Syntax error at line ${index + 1}: Unknown key '${key}'.`,
             );
         }
       }
       // Handle invalid scenarios
       else {
-        throw new BadRequestException(
+        throw new BadFxqlRequestErrorWithMessage(
           `Syntax error at line ${index + 1}: Unexpected line outside of FXQL block.`,
         );
       }
@@ -100,7 +101,9 @@ export class FxqlParserService {
 
     // Ensure no incomplete block remains
     if (currentEntry) {
-      throw new BadRequestException(`Syntax error: FXQL block was not closed.`);
+      throw new BadFxqlRequestErrorWithMessage(
+        `Syntax error: FXQL block was not closed.`,
+      );
     }
 
     return Object.values(currencyPairsMap);
@@ -108,7 +111,7 @@ export class FxqlParserService {
 
   private validateCurrency(currency: string, line: number): void {
     if (currency.toUpperCase() !== currency || currency.length !== 3) {
-      throw new BadRequestException(
+      throw new BadFxqlRequestErrorWithMessage(
         `Syntax error at line ${line}: Invalid currency '${currency}'.`,
       );
     }
@@ -121,7 +124,7 @@ export class FxqlParserService {
   ): number {
     const num = parseFloat(value);
     if (isNaN(num) || num <= 0) {
-      throw new BadRequestException(
+      throw new BadFxqlRequestErrorWithMessage(
         `Syntax error at line ${line}: Invalid value for ${field} '${value}'. Expected a positive number.`,
       );
     }
@@ -136,7 +139,7 @@ export class FxqlParserService {
       num.toString() !== value.trim() ||
       num < 0
     ) {
-      throw new BadRequestException(
+      throw new BadFxqlRequestErrorWithMessage(
         `Syntax error at line ${line}: Invalid value for CAP '${value}'. Expected a non-negative integer.`,
       );
     }
