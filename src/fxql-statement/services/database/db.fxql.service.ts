@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
-import { PrismaService } from 'src/prisma/prisma.service';
-import { InternalServerError } from 'src/utils/errorBuilder.utils';
+import { PrismaService } from '../../../prisma/prisma.service';
+import { InternalServerError } from '../../../utils/errorBuilder.utils';
 
 @Injectable()
 export class DatabaseFxqlStatementService {

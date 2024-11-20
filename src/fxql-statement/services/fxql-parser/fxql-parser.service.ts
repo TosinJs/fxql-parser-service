@@ -1,13 +1,25 @@
 import { Injectable } from '@nestjs/common';
 import { BadFxqlRequestErrorWithMessage } from '../../../utils/errorBuilder.utils';
 import { v4 as uuidv4 } from 'uuid';
+import { ApiProperty } from '@nestjs/swagger';
 
-export interface ParsedFxql {
+export class ParsedFxql {
+  @ApiProperty()
   id: string;
+  
+  @ApiProperty()
   sourceCurrency: string;
+
+  @ApiProperty()
   destinationCurrency: string;
+
+  @ApiProperty()
   buyPrice: number;
+
+  @ApiProperty()
   sellPrice: number;
+
+  @ApiProperty()
   capAmount: number;
 }
 

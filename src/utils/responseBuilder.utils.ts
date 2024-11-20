@@ -1,7 +1,33 @@
-export interface Response {
+import { ApiProperty } from '@nestjs/swagger';
+import { ParsedFxql } from '../fxql-statement/services/fxql-parser/fxql-parser.service';
+
+export class Response {
+  @ApiProperty({
+    description: 'The response status code',
+  })
   code: string;
+
+  @ApiProperty({
+    description: 'The response message',
+  })
   message: string;
-  data: any;
+
+  @ApiProperty({
+    description: 'The response data',
+  })
+  data: ParsedFxql | null;
+}
+
+export class ErrorResponse {
+  @ApiProperty({
+    description: 'The response status code',
+  })
+  code: string;
+
+  @ApiProperty({
+    description: 'The response message',
+  })
+  message: string;
 }
 
 export function createResponse({
