@@ -1,0 +1,29 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model FxqlStatement {
+  id                    String     @id @default(uuid())
+  createdAt             DateTime   @default(now())       @map("created_at")
+  updatedAt             DateTime   @updatedAt            @map("updated_at")
+  deletedAt             DateTime?  @db.Timestamptz(6)    @map("deleted_at")
+  sourceCurrency        String     @db.VarChar(255)      @map("source_currency")
+  destinationCurrency   String     @db.VarChar(255)      @map("destination_currency")
+  sellPrice             Float                            @map("sell_price")
+  buyPrice              Float                            @map("buy_price")
+  capAmount             Int                              @map("cap_amount")
+
+  @@unique([sourceCurrency, destinationCurrency])
+  @@map("fxql_statements")
+}
