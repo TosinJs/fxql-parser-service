@@ -33,6 +33,6 @@ export class FxqlStatementController {
   })
   async create(@Body() createFxqlStatementDto: CreateFxqlStatementDto) {
     const data = await this.fxqlStatementService.create(createFxqlStatementDto);
-    return createResponse({ statusCode: HttpStatus.OK, data });
+    return createResponse({ statusCode: HttpStatus.CREATED, data });
   }
 }

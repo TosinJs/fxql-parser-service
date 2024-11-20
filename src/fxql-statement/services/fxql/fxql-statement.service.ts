@@ -19,7 +19,7 @@ export class FxqlStatementService {
     const parsedFxql = this.fxqlParserService.parseFxqlStatement(
       createFxqlStatementDto.FXQL,
     );
-    await this.dbFxqlService.insertFxqlStatement(parsedFxql);
+    await this.dbFxqlService.insertExchangeRates(parsedFxql);
 
     return parsedFxql;
   }

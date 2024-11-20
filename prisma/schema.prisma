@@ -13,7 +13,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model FxqlStatement {
+model ExchangeRate {
   id                    String     @id @default(uuid())
   createdAt             DateTime   @default(now())       @map("created_at")
   updatedAt             DateTime   @updatedAt            @map("updated_at")
@@ -25,5 +25,5 @@ model FxqlStatement {
   capAmount             Int                              @map("cap_amount")
 
   @@unique([sourceCurrency, destinationCurrency])
-  @@map("fxql_statements")
+  @@map("exchange_rates")
 }
