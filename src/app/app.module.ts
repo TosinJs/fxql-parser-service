@@ -1,10 +1,19 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './controllers/app.controller';
 import { AppService } from './services/app.service';
-import { FxqlStatementModule } from 'src/fxql-statement/fxql-statement.module';
+import { FxqlStatementModule } from '../fxql-statement/fxql-statement.module';
+import { ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
-  imports: [FxqlStatementModule],
+  imports: [
+    FxqlStatementModule,
+    ThrottlerModule.forRoot([
+      {
+        ttl: 50000,
+        limit: 10,
+      },
+    ]),
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

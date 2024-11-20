@@ -104,17 +104,12 @@ describe('FXQLParserService', () => {
       {
         name: 'Incomplete statement',
         input: 'USD-GBP {\\n BUY 100\\n SELL 200\\n',
-        errorMessage: 'Syntax error: FXQL block was not closed.',
-      },
-      {
-        name: 'Incomplete statement',
-        input: 'USD-GBP {\\n BUY 100\\n SELL 200\\n',
-        errorMessage: 'Syntax error: FXQL block was not closed.',
+        errorMessage: 'Syntax error at line 4: Incomplete FXQL block.',
       },
       {
         name: 'Incomplete statement',
         input: 'USD-GBP {\\n BuY 100\\n SELL 200\\n',
-        errorMessage: `Syntax error at line 2: Unknown key 'BuY'`,
+        errorMessage: `Syntax error at line 2: Unknown key 'BuY'.`,
       },
       {
         name: 'Invalid buy price',
