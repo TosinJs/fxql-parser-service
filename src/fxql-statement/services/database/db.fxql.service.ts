@@ -9,12 +9,25 @@ export class DatabaseFxqlStatementService {
 
   async insertExchangeRates(data: Prisma.ExchangeRateCreateInput[]) {
     try {
-      await this.prisma.exchangeRate.createMany({
-        data,
-        skipDuplicates: true,
-      });
+      const upsertPromises = data.map((rate) =>
+        this.prisma.exchangeRate.upsert({
+          where: {
+            sourceCurrency_destinationCurrency: {
+              sourceCurrency: rate.sourceCurrency,
+              destinationCurrency: rate.destinationCurrency,
+            },
+          },
+          update: {
+            id: rate.id,
+            buyPrice: rate.buyPrice,
+            sellPrice: rate.sellPrice,
+            capAmount: rate.capAmount,
+          },
+          create: rate,
+        }),
+      );
 
-      return;
+      await Promise.all(upsertPromises);
     } catch (error) {
       throw new DBInternalServerError(
         error.message,

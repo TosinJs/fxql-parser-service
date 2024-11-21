@@ -9,7 +9,7 @@ import { ThrottlerModule } from '@nestjs/throttler';
     FxqlStatementModule,
     ThrottlerModule.forRoot([
       {
-        ttl: 50000,
+        ttl: 60000,
         limit: 10,
       },
     ]),
