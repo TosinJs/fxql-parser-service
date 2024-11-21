@@ -127,12 +127,9 @@ Prisma is used in this project as the ORM (Object-Relational Mapping) tool to si
 ### Error Handling Approach
 
 This project uses a structured error-handling approach to ensure robustness and clarity:
-
-<ul>
-  <li><strong>Service-Level Errors:</strong> Internal errors are encapsulated within [custom a service error class](https://github.com/TosinJs/fxql-parser-service/blob/main/src/utils/errorBuilder.utils.ts), providing clear context and isolating them from other layers.</li>
-  <li><strong>API-Level Responses:</strong> At the API level, errors are translated into appropriate HTTP status codes, such as 400 for client errors or 500 for server errors, ensuring meaningful responses to clients.</li>
-  <li><strong>Global Error Handler:</strong> A [global error handler](https://github.com/TosinJs/fxql-parser-service/blob/main/src/utils/exceptions/all-exceptions.exception.ts) is implemented to catch, log and process any both handled and unhandled errors, providing a final layer of defense and maintaining consistent error responses across the application.</li>
-</ul>
+  - <strong>Service-Level Errors:</strong> Internal errors are encapsulated within [custom a service error class](https://github.com/TosinJs/fxql-parser-service/blob/main/src/utils/errorBuilder.utils.ts), providing clear context and isolating them from other layers.<
+  - <strong>API-Level Responses:</strong> At the API level, errors are translated into appropriate HTTP status codes, such as 400 for client errors or 500 for server errors, ensuring meaningful responses to clients.
+  - <strong>Global Error Handler:</strong> A [global error handler](https://github.com/TosinJs/fxql-parser-service/blob/main/src/utils/exceptions/all-exceptions.exception.ts) is implemented to catch, log and process any both handled and unhandled errors, providing a final layer of defense and maintaining consistent error responses across the application.
 
 This approach ensures errors are properly contained, logged, and communicated without exposing unnecessary details. Specific logs for where errors occured in parsing the FXQL is also added to aid the debugging process.
 
