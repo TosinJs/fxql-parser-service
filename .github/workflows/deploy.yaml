@@ -15,7 +15,7 @@ jobs:
         with:
           host: ${{ secrets.CONTABO_HOST }}
           username: ${{ secrets.CONTABO_USER }}
-          key: ${{ secrets.CONTABO_SSH_KEY }}
+          password: ${{ secrets.CONTABO_SSH_KEY }}
           port: 22
           script: |
             echo "Navigating to deployment directory"
