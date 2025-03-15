@@ -138,6 +138,6 @@ jobs:
 
             echo "Running Docker Compose"
             cd wallets
-            docker-compose down
-            docker-compose pull
-            docker-compose up -d --build
+            docker compose down
+            docker compose pull
+            docker compose up --build -d
